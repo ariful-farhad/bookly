@@ -1,9 +1,9 @@
-from fastapi import FastAPI, status
+from fastapi import FastAPI, Query, status
 from pydantic import BaseModel
+from fastapi.exceptions import HTTPException
 from typing import List
 
 app = FastAPI()
-
 
 books = [
     {
@@ -73,25 +73,54 @@ class Book(BaseModel):
     language: str
 
 
-@app.get('/books', response_model=List[Book])
+class BookUpdateModel(BaseModel):
+    title: str
+    author: str
+    publisher: str
+    page_count: int
+    language: str
+
+
+@app.get("/books", response_model=List[Book])
 async def get_all_books():
     return books
 
 
-@app.post('/books', status_code=status.HTTP_201_CREATED)
+@app.post("/books", status_code=status.HTTP_201_CREATED)
 async def create_a_book(book_data: Book) -> dict:
     new_book = book_data.model_dump()
     books.append(new_book)
+    return books
 
+
+@app.get("/book/{book_id}")
+async def read_book(book_id: int):
+    for book in books:
+        if book["id"] == book_id:
+            return book
+    raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="book not found")
+
+
+@app.patch("/books/{book_id}", status_code=201)
+async def update_book(book_id: int, book_update_data: BookUpdateModel) -> dict:
+    for book in books:
+        if book["id"] == book_id:
+            book["author"] = book_update_data.author
+            book["publisher"] = book_update_data.publisher
+            book["page_count"] = book_update_data.page_count
+            book["title"] = book_update_data.title
+            book["language"] = book_update_data.language
+            return book
+    raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="book not found")
+
+
+@app.delete("/book/{book_id}", status_code=status.HTTP_202_ACCEPTED)
+async def delete_book(book_id: int) -> dict:
+    for i, book in enumerate(books):
+        if book["id"] == book_id:
+            temp = books.pop(i)
+            return temp
     print(books)
-    return new_book
-
-@app.get('/book/{book_id}')
-async def update_book() -> dict:
-    pass
-
-@app.get('/books')
-async def delete_book() -> dict:
-    pass
-
-print(books)
+    raise HTTPException(
+        status_code=status.HTTP_404_NOT_FOUND, detail="book does not exist"
+    )
