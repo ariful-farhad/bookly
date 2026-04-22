@@ -7,7 +7,7 @@ from uuid import UUID, uuid4
 class Book(SQLModel, table=True):
     __tablename__ = "books"
     uid: UUID = Field(
-        sa_column=Column(pg.UUID, nullable=False, primary_key=True, default=uuid4())
+        sa_column=Column(pg.UUID, nullable=False, primary_key=True, default=uuid4)
     )
     title: str
     author: str
@@ -15,8 +15,10 @@ class Book(SQLModel, table=True):
     published_date: str
     page_count: int
     language: str
-    created_at: datetime = Field(Column(pg.TIMESTAMP, default=datetime.now))
-    updated_at: datetime = Field(Column(pg.TIMESTAMP, default=datetime.now))
+    created_at: datetime = Field(sa_column=Column(pg.TIMESTAMP, default=datetime.now))
+    updated_at: datetime = Field(
+        sa_column=Column(pg.TIMESTAMP, default=datetime.now, onupdate=datetime.now)
+    )
 
     def __repr__(self):
         return f"<Book {self.title}>"
