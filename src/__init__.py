@@ -9,7 +9,7 @@ async def life_span(app: FastAPI):
     print("Server is starting .... ")
     await init_db()
     yield
-    print("Server is ending ... ")
+    print("Server is ending .... ")
 
 
 version = "v1"
