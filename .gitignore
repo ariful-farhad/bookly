@@ -75,7 +75,6 @@ Thumbs.db
 *.db
 
 # Alembic migrations (optional: keep versions if needed)
-alembic/versions/*.pyc
 
 # Static / media (if generated)
 staticfiles/

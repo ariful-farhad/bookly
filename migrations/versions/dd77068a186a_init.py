@@ -1,0 +1,40 @@
+"""init
+
+Revision ID: dd77068a186a
+Revises:
+Create Date: 2026-04-29 22:00:50.071123
+
+"""
+
+from typing import Sequence, Union
+
+from alembic import op
+import sqlalchemy as sa
+import sqlmodel
+from sqlalchemy.dialects import postgresql
+
+
+# revision identifiers, used by Alembic.
+revision: str = "dd77068a186a"
+down_revision: Union[str, Sequence[str], None] = None
+branch_labels: Union[str, Sequence[str], None] = None
+depends_on: Union[str, Sequence[str], None] = None
+
+
+def upgrade() -> None:
+    op.create_table(
+        "users",
+        sa.Column("uid", sa.UUID(), nullable=False),
+        sa.Column("username", sqlmodel.sql.sqltypes.AutoString(), nullable=False),
+        sa.Column("email", sqlmodel.sql.sqltypes.AutoString(), nullable=False),
+        sa.Column("first_name", sqlmodel.sql.sqltypes.AutoString(), nullable=False),
+        sa.Column("last_name", sqlmodel.sql.sqltypes.AutoString(), nullable=False),
+        sa.Column("is_verified", sa.Boolean(), nullable=False),
+        sa.Column("created_at", postgresql.TIMESTAMP(), nullable=True),
+        sa.Column("updated_at", postgresql.TIMESTAMP(), nullable=True),
+        sa.PrimaryKeyConstraint("uid"),
+    )
+
+
+def downgrade() -> None:
+    op.drop_table("users")
