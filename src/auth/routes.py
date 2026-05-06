@@ -6,6 +6,7 @@ from fastapi.exceptions import HTTPException
 from fastapi.responses import JSONResponse
 from sqlmodel.ext.asyncio.session import AsyncSession
 
+from src.auth.dependencies import RefreshTokenBearer
 from src.auth.schemas import UserModel, UserCreateModel, UserLoginModel
 from src.auth.service import AuthService
 from src.db.main import get_session
@@ -67,3 +68,8 @@ async def login_user(
     raise HTTPException(
         status_code=status.HTTP_403_FORBIDDEN, detail="Invalid email or password"
     )
+
+
+@auth_router.get("/refresh_token")
+async def get_new_access_token(token_details: dict = Depends(RefreshTokenBearer())):
+    return {}
